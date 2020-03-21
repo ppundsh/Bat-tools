@@ -1,5 +1,5 @@
 @echo off &&　SETLOCAL ENABLEDELAYEDEXPANSION
-Rem Harry ver2.004 20200321
+Rem Harry ver2.004 20200321_2
 GOTO GetAdmin
 :Start
 :: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 自行設定區/ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
