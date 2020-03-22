@@ -21,8 +21,7 @@ SET Command[8]=del /f /s /q /a %systemdrive%\*.sqm
 SET Command[9]=del /s /f /q "%AllUsersProfile%\「開始」功能表\程式集\Windows Messenger.lnk"
 SET Command[10]=rd /s /q %windir%\temp 
 SET Command[11]=md %windir%\temp
-SET Command[12]=rd /s /q "%systemdrive%\Program Files\Temp"
-SET Command[13]=md "%systemdrive%\Program Files\Temp"
+SET Command[12]=del /s /q "%systemdrive%\Program Files\Temp\*.*"
 SET Command[14]=rd /s /q "%systemdrive%\d"
 
 :: 腳本類型3：清除C:\Users\所有個人設定檔\【路徑】；另外firefox快取因路徑特殊，因此強制清理。
@@ -156,18 +155,22 @@ setlocal enabledelayedexpansion
 
 :: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 清除腳本類型2/ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 :: ~~~~~~~~~~~~~~~~~~~~~~~~~~ 依序執行【Command[*]】指令 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SET Com_Index=1
 SET /A SNUMB=%SNUMB%+1
 ECHO 創建 SyS clean %SNUMB% 清除程序
+:ComCalcStart
+if defined Command[%Com_Index%] (
+    SET Com_Total=%Com_Index%
+    SET /A Com_Index=%Com_Index%+1
+    GOTO ComCalcStart
+)
 (
 ECHO @echo off
-ECHO title SyS Clean %SNUMB%
+ECHO title SyS Clean %SNUMB% Done: 0 / Total: %Com_Total%
 )>%appdata%\IT_Clean_Tool\Clean_tmp%SNUMB%.bat
-SET Com_Index=1
-:ComLoopStart
-if defined Command[%Com_Index%] (
-    echo !Command[%Com_Index%]!>>%appdata%\IT_Clean_Tool\Clean_tmp%SNUMB%.bat
-    SET /A Com_Index=%Com_Index%+1
-    GOTO ComLoopStart
+FOR /l %%a in (1 1 %Com_Total%) do (
+    ECHO !Command[%%a]!>>%appdata%\IT_Clean_Tool\Clean_tmp%SNUMB%.bat>>%appdata%\IT_Clean_Tool\Clean_tmp%SNUMB%.bat
+    ECHO title SyS Clean %SNUMB% Done: %%a / Total: %Com_Total%>>%appdata%\IT_Clean_Tool\Clean_tmp%SNUMB%.bat
 )
 (
 ECHO echo "%SNUMB%"^>%appdata%\IT_Clean_Tool\Count\%SNUMB%.txt^&^&exit
