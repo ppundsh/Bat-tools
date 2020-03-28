@@ -22,7 +22,7 @@ SET Command[9]=del /s /f /q "%AllUsersProfile%\「開始」功能表\程式集\Windows Mes
 SET Command[10]=rd /s /q %windir%\temp 
 SET Command[11]=md %windir%\temp
 SET Command[12]=del /s /q "%systemdrive%\Program Files\Temp\*.*"
-SET Command[14]=rd /s /q "%systemdrive%\d"
+SET Command[13]=rd /s /q "%systemdrive%\d"
 
 :: 腳本類型3：清除C:\Users\所有個人設定檔\【路徑】；另外firefox快取因路徑特殊，因此強制清理。
 SET "Path[1]=\Local Settings\Temporary Internet Files\"
