@@ -1,15 +1,16 @@
-@echo off &&¡@SETLOCAL ENABLEDELAYEDEXPANSION
-Rem Harry ver2.005 20200322
+@echo off && SETLOCAL ENABLEDELAYEDEXPANSION
+Rem Harry 20200329
+SET ver=ver3.101
 GOTO GetAdmin
 :Start
-:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ¦Û¦æ³]©w°Ï/ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ª½±µ¨Ì·Ó®æ¦¡·s¼W§Y¥i ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ own area/ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Just follow the format ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:: ¸}¥»Ãþ«¬1:²M²zC¼Ñ¤U©Ò¦³¡i°ÆÀÉ¦W¡j¤å¥ó¡A¨C¤@¦æ§¡¬O¿W¥ß¹B¦æ¸}¥»
+:: Script Type 1: Clean up all [extension] files under slot C, each line is a separate script
 SET "Ext[1]=.tmp,.syd,.---,.$$$,.@@@,.??$,.??~,.err,.prv"
 SET "Ext[2]=.xlk,.diz,.dmp,._mp,.gid,.chk,.old,.wbk,.ftg,.fts"
 
-:: ¸}¥»Ãþ«¬2:«ü¥Oª½±µ°õ¦æ
+:: Script Type 2: Direct execution of instructions
 SET Command[1]=del /f /s /q %systemdrive%\mscreate.dir
 SET Command[2]=del /f /s /q %systemdrive%\chklist.*
 SET Command[3]=del /f /s /q %systemdrive%\recycled\*.*
@@ -18,13 +19,12 @@ SET Command[5]=del /f /s /q %windir%\*.bak
 SET Command[6]=del /f /s /q %windir%\prefetch\*.*
 SET Command[7]=del /s /f /q "%systemroot%\Temp\*.*"
 SET Command[8]=del /f /s /q /a %systemdrive%\*.sqm
-SET Command[9]=del /s /f /q "%AllUsersProfile%\¡u¶}©l¡v¥\¯àªí\µ{¦¡¶°\Windows Messenger.lnk"
-SET Command[10]=rd /s /q %windir%\temp 
-SET Command[11]=md %windir%\temp
-SET Command[12]=del /s /q "%systemdrive%\Program Files\Temp\*.*"
-SET Command[13]=rd /s /q "%systemdrive%\d"
+SET Command[9]=rd /s /q %windir%\temp 
+SET Command[10]=md %windir%\temp
+SET Command[11]=del /s /q "%systemdrive%\Program Files\Temp\*.*"
+SET Command[12]=rd /s /q "%systemdrive%\d"
 
-:: ¸}¥»Ãþ«¬3¡G²M°£C:\Users\©Ò¦³­Ó¤H³]©wÀÉ\¡i¸ô®|¡j¡F¥t¥~firefox§Ö¨ú¦]¸ô®|¯S®í¡A¦]¦¹±j¨î²M²z¡C
+:: Script Type 3: Clean C:\Users\allprofiles\[rold]
 SET "Path[1]=\Local Settings\Temporary Internet Files\"
 SET "Path[2]=\appdata\recent\"
 SET "Path[3]=\Local Settings\Temp\"
@@ -32,8 +32,8 @@ SET "Path[4]=\recent\"
 SET "Path[5]=\appdata\Local\Google\Chrome\User Data\Default\Cache\"
 SET "Path[6]=\appdata\AppData\Local\UCBrowser\User Data\Default\Cache\"
 
-:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ /¦Û¦æ³]©w°Ï ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ /own area ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 GOTO Start2
 
 :GetAdmin
@@ -59,13 +59,13 @@ CD /D "%~dp0"
 GOTO Start
 :Start2
 
-:: ²M°£´Ý¯dÀÉ
+:: Clear residual files
 IF EXIST "%appdata%\IT_Clean_Tool" RD /S /Q "%appdata%\IT_Clean_Tool"
 
-:: «Ø¥ß¼È¦s¸ê®Æ§¨
+:: Create temporary folder
 MKDIR %appdata%\IT_Clean_Tool\Count
 
-:: ­p®É¼Ò²ÕSTART
+:: Timing module START
 SET "INSTR="
 FOR %%I IN (%*) DO (
     SET "INSTR=!INSTR!%%I "
@@ -78,23 +78,23 @@ SET A_SECS=%A:~6,2%
 SET A_MSEC=%A:~9,2%
 %INSTR%
 
-:: ¸}¥»±Ò°Ê¤é´Á»P®É¶¡
+:: Script start date and time
 SET RunDate=%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%
 SET RunDate=%RunDate: =0%_%A: =%
 
-:: °õ¦æ¬ö¿ý»P±Ò°Ê¨t²Î²M²z
-ECHO °õ¦æ¬ö¿ý:
+:: Execution log and startup system cleanup
+ECHO Execution log:
 FOR /F "tokens=1,2,3,4,*" %%i IN ('reg query "HKEY_LOCAL_MACHINE\software\ItCleanTool" ^| find /i "RunDate"') DO SET "RunDate_=%%k"
 
 IF defined RunDate_ (
     START cleanmgr /sagerun:99
-    ECHO ¤W¦¸°õ¦æ®É¶¡¬°¡G%RunDate_%
+    ECHO Last execution time was %RunDate_%
     goto _SKIPSAVE
 )
 
 START cleanmgr /sageset:99
 ECHO.
-ECHO ¦¹¬°­º¦¸°õ¦æ³]©w¡A½Ð©ó³]©w¦nºÏºÐ²M²z¤u¨ã²M²z¶µ¥Ø«á¦A«ö¥ô·NÁäÄ~Äò
+ECHO This is the first time to perform the settings. Please press any key to continue after setting up the disk cleaning tool cleaning items
 SET "RunDate_=None"
 ECHO.
 pause
@@ -111,32 +111,32 @@ DEL /Q %appdata%\IT_Clean_Tool\ItCleanTool.reg
 
 :_SKIPSAVE
 
-:: ¬ö¿ý²M²z«eC¼ÑªÅ¶¡
+:: Record C-slot space before clearing
 FOR /F "delims= tokens=1" %%a in ('fsutil volume diskfree c:') do set DiskFreeS=%%a
 
-::³]©w¿W¥ß¸}¥»¼Æ¶qÅÜ¼Æ
+:: Set the number of independent scripts
 SET SNUMB=0
 
 CLS
-TITLE SyS Clean ¥¿¦b²M°£¨t²Î©U§£ÀÉ®×¤¤¡A½Ðµy­Ô......ver2.001
+TITLE SyS Clean Please wait, clearing system junk files......%ver%
 
 
-:: ³Ð«Ø¿W¥ß²M°£¸}¥»/
-:: ~~~~~~~~~~~~~~~~
+:: Create stand-alone cleanup script/
+:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ²M°£¸}¥»Ãþ«¬1/ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-:: ~~~~~~~~~~~~~~~~~~~~ §R°£C:\°ÆÀÉ¦W¬°¡iÅÜ¼Æ%EXT*%¡jªº©Ò¦³¤å¥ó ~~~~~~~~~~~~~~~~~~~~~~~~
+:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Clear script type1/ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: ~~~~~~~~~ Delete all files with C: \ extension name [Variable% EXT *%] ~~~~~~~~~~~~~~~~~~
 SET Ext_Index=1
 :ExtLoopStart
 if defined Ext[%Ext_Index%] (
     SET /A SNUMB=%SNUMB%+1
-    ECHO ³Ð«Ø SyS clean !SNUMB! ²M°£µ{§Ç
+    ECHO Create SyS clean !SNUMB! Cleaning procedure
     (
         ECHO @echo off ^&^& SETLOCAL ENABLEDELAYEDEXPANSION
         ECHO set "sch=!Ext[%Ext_Index%]!"
         ECHO for %%%%a in (!Ext[%Ext_Index%]!^) do (
         SETLOCAL DISABLEDELAYEDEXPANSION
-        SET sch_=!sch:%%%%a=  ¡i%%%%a¡j  !
+        SET sch_=!sch:%%%%a=  ã€%%%%aã€‘  !
         SETLOCAL ENABLEDELAYEDEXPANSION
         ECHO title SyS Clean !SNUMB! !sch_!
         ECHO del /f /s /q C:\*%%%%a
@@ -149,15 +149,15 @@ if defined Ext[%Ext_Index%] (
 )
 
 setlocal enabledelayedexpansion
-:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ /²M°£¸}¥»Ãþ«¬1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ /Clear script type1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 :: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ²M°£¸}¥»Ãþ«¬2/ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-:: ~~~~~~~~~~~~~~~~~~~~~~~~~~ ¨Ì§Ç°õ¦æ¡iCommand[*]¡j«ü¥O ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Clear script type2/ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: ~~~~~~~~~~~~~~~~~~~~~~~~~~ Sequential execution[Command[*]]command ~~~~~~~~~~~~~~~~~~~~~~
 SET Com_Index=1
 SET /A SNUMB=%SNUMB%+1
-ECHO ³Ð«Ø SyS clean %SNUMB% ²M°£µ{§Ç
+ECHO Create SyS clean %SNUMB% Cleaning procedure
 :ComCalcStart
 if defined Command[%Com_Index%] (
     SET Com_Total=%Com_Index%
@@ -176,17 +176,17 @@ FOR /l %%a in (1 1 %Com_Total%) do (
 ECHO echo "%SNUMB%"^>%appdata%\IT_Clean_Tool\Count\%SNUMB%.txt^&^&exit
 )>>%appdata%\IT_Clean_Tool\Clean_tmp%SNUMB%.bat
 start "" "%appdata%\IT_Clean_Tool\Clean_tmp%SNUMB%.bat"
-:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ /²M°£¸}¥»Ãþ«¬2 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ /Clear script type2 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 :: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ²M°£¸}¥»Ãþ«¬3/ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-:: ~~~~~~~~~~~~~~~~~ ¹M¾úC:\Users\* ¤U¨Ï¥ÎªÌ¸ê®Æ§¨¨Ã§R°£«ü©w¸ê®Æ§¨ÀÉ®× ~~~~~~~~~~~~~~~~~~
+:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Clear script type3/ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+::~~~~~~~~~ all C:\Users\* The user folder and delete the specified folder file ~~~~~~~~~~~~
 SET /A SNUMB=%SNUMB%+1
-ECHO ³Ð«Ø SyS clean %SNUMB% ²M°£µ{§Ç
+ECHO Create SyS clean %SNUMB% Cleaning procedure
 (
 ECHO @echo off ^&^& SETLOCAL ENABLEDELAYEDEXPANSION
-ECHO echo ²M°£­Ó§O¨Ï¥ÎªÌ¼È¦sÀÉ
+ECHO echo Clear individual user temporary files
 )>%appdata%\IT_Clean_Tool\Clean_tmp%SNUMB%.bat
 SET Pat_Index=1
 :PatLoopStart
@@ -200,7 +200,7 @@ ECHO SET Pat_Index_=1
 ECHO :PatLoopStart_
 ECHO if defined Path[%%Pat_Index_%%]_ (
 ECHO     for /f "delims= " %%%%i in ('DIR /B /ON C:\users'^) do (
-ECHO       title SyS Clean %SNUMB% ²M²z %%%%i ¼È¦sÀÉ
+ECHO       title SyS Clean %SNUMB% Clean %%%%i temporary files
 ECHO       del /f /s /q "C:\Users\%%%%i^!Path[%%Pat_Index_%%]_:~^!*.*"
 ECHO       for /f "delims= " %%%%j in ('DIR /B /ON C:\users\%%%%i\AppData\Local\Mozilla\Firefox\Profiles'^) do (
 ECHO         del /f /s /q "C:\users\%%%%i\AppData\Local\Mozilla\Firefox\Profiles\%%%%j\cache2\entries\*.*"
@@ -212,38 +212,39 @@ ECHO ^)
 ECHO echo "%SNUMB%"^>%appdata%\IT_Clean_Tool\Count\%SNUMB%.txt^&^&exit
 )>>%appdata%\IT_Clean_Tool\Clean_tmp%SNUMB%.bat
 start "" "%appdata%\IT_Clean_Tool\Clean_tmp%SNUMB%.bat"
-:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ /²M°£¸}¥»Ãþ«¬3 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ /Clear script type3 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 :: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-:: /³Ð«Ø¿W¥ß²M°£¸}¥»
-:: ~~~~~~~~~~~~~~~~
+:: /Create stand-alone cleanup script
+:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ECHO.
-ECHO ¥¿¦b²M°£¨t²Î©U§£ÀÉ®×¤¤¡A½Ðµy­Ô......
+ECHO Please wait, clearing system junk files......
 ECHO.
 
 
-:: µ¥«Ý¿W¥ß²M°£¸}¥»§¹¦¨
-:: ~~~~~~~~~~~~~~~~~~~
+:: Wait for independent cleanup script to complete
+:: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ver|find "ç‰ˆæœ¬" >nul&&SET FindStr=å€‹æª”æ¡ˆ||SET FindStr=File^(s^)
 :_WAIT01
-ECHO ¨Ï¥ÎªÌ¦Cªí: 
+ECHO User list: 
 DIR /B /ON C:\users
 ECHO.
-ECHO C¼Ñ²M°£«e¡G%DiskFreeS%
-SET /P= ¡½<nul
-for /L %%i in (1 1 30) do set /p a=¡½<nul&ping /n 1 127.0.0.1>nul
-for /f %%i in ('dir "%appdata%\IT_Clean_Tool\Count" /a-h-s /s^| find "­ÓÀÉ®×"') do (Set /A "TOTAL=%%i")
-TITLE SyS Clean ¥¿¦b²M°£¨t²Î©U§£ÀÉ®×¤¤¡A½Ðµy­Ô Done: %TOTAL% / Total: %SNUMB%......ver2.001
+ECHO C slot is clearedï¼š%DiskFreeS%
+SET /P= â– <nul
+for /L %%i in (1 1 30) do set /p a=â– <nul&ping /n 1 127.0.0.1>nul
+for /f %%i in ('dir "%appdata%\IT_Clean_Tool\Count" /a-h-s /s^| find "%FindStr%"') do (Set /A "TOTAL=%%i")
+TITLE SyS Clean Please wait, clearing system junk files Done: %TOTAL% / Total: %SNUMB%......%ver%
 cls
-ECHO ²M°£¤¤¡A¶i«× Done: %TOTAL% / Total: %SNUMB%
+ECHO Clearing, progress Done: %TOTAL% / Total: %SNUMB%
 ECHO.
-ECHO ¤W¦¸°õ¦æ®É¶¡¬°¡G%RunDate_%
+ECHO Last execution time was%RunDate_%
 ECHO.
 IF %TOTAL% LSS %SNUMB% GOTO _WAIT01
 
 
-:: ­p®É¼Ò²ÕEND
-:: ~~~~~~~~~~~
+:: Timing module END
+:: ~~~~~~~~~~~~~~~~~
 SET B=%TIME%
 
 
@@ -277,17 +278,16 @@ ECHO ELAPSE    :%C_HOUR%:%C_MINS%:%C_SECS%.%C_MSEC%
 
 FOR /F "delims= tokens=1" %%a in ('fsutil volume diskfree c:') do set DiskFreeE=%%a
 ECHO.
-ECHO C¼Ñ²M°£«e¡G%DiskFreeS%
-ECHO C¼Ñ²M°£«á¡G%DiskFreeE%
+ECHO C slot before cleanï¼š%DiskFreeS%
+ECHO C slot after cleanï¼š%DiskFreeE%
 
-TITLE SYS Clean ¤w§¹¦¨......%C_HOUR%:%C_MINS%:%C_SECS%.%C_MSEC% ver2.001
+TITLE SYS Clean done......%C_HOUR%:%C_MINS%:%C_SECS%.%C_MSEC% %ver%
 ENDLOCAL
 
-:: ¬ö¿ý²M²z«áC¼ÑªÅ¶¡
 
-:: ²M°£¼È¦sÀÉ¡C
-:: ~~~~~~~~~~~
+:: Clean Temp files
+:: ~~~~~~~~~~~~~~~~
 RD /S /Q "%appdata%\IT_Clean_Tool"
 ECHO.
-ECHO ¥þ³¡²M°£¤w§¹¦¨¡C
+ECHO All done
 ECHO.& pause 
