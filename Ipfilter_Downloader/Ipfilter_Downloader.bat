@@ -1,15 +1,24 @@
 @echo off
-Rem è¨­å®šè·¯å¾‘
+Rem ³]©w¸ô®|
 
-set IpFilterDir=C:\Dropbox\æ‡‰ç”¨ç¨‹å¼\BT
-set CurlPath=C:\Dropbox\Apps\Cmder\bin
+set IpFilterDir=C:\Dropbox\À³¥Îµ{¦¡\BT
+set CurlPath=D:\Programs\curl\bin
+set UnzipPath=C:\Program Files\7-Zip
+set Url=http://upd.emule-security.org/ipfilter.zip
 
-Rem åˆªé™¤èˆŠdat
-if exist %IpFilterDir%\ipfilter.dat (del %IpFilterDir%\ipfilter.dat)
+Rem ÀË´ú
+if not exist "%CurlPath%\curl.exe" echo ½Ğ¤U¸üCrul¨Ã­×§ï¸}¥»¤ºªº¸ô®| https://curl.haxx.se/windows/ && pause && exit
+if not exist "%UnzipPath%\7z.exe" echo ½Ğ¤U¸ü7z¨Ã­×§ï¸}¥»¤ºªº¸ô®| https://www.developershome.com/7-zip/ && pause && exit
+if not exist "%IpFilterDir%" mkdir "%IpFilterDir%"
+ping %Url%
+if %errorlevol% = 1 echo Ipfilter ¤U¸üºô§}µLªk¨Ï¥Î¡A½Ğ­×§ï¸}¥»¤ººô§}ªº¸ô®| && pause && exit
 
-Rem ä¸‹è¼‰ã€è§£å£“å’Œé‡æ–°å‘½å
-%CurlPath%\curl http://upd.emule-security.org/ipfilter.zip -o %IpFilterDir%\ipfilter.zip
-7z e %IpFilterDir%\ipfilter.zip -y -o%IpFilterDir%
+Rem §R°£ÂÂdat
+if exist "%IpFilterDir%\ipfilter.dat" (del "%IpFilterDir%\ipfilter.dat")
+
+Rem ¤U¸ü¡B¸ÑÀ£©M­«·s©R¦W
+start "" "%CurlPath%\curl" %Url% -o %IpFilterDir%\ipfilter.zip
+start "" "%UnzipPath%\7z.exe" e %IpFilterDir%\ipfilter.zip -y -o%IpFilterDir%
 ren %IpFilterDir%\guarding.p2p ipfilter.dat
 del %IpFilterDir%\ipfilter.zip
 
