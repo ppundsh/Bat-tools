@@ -7,4 +7,4 @@ clean2 - Multi-Process 系統清理腳本，內建三種類型。
 首次執行時會在機碼寫入時間資訊，並啟用磁碟清理工具設定程序，未來會按照首次設定直接自動運行。
 
 # Ipfilter_Downloader
-下載ipfilter，可搭配系統排程。
+下載ipfilter並更名，可搭配系統排程。
