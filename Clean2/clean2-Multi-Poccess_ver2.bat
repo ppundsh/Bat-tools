@@ -136,7 +136,7 @@ if defined Ext[%Ext_Index%] (
         ECHO set "sch=!Ext[%Ext_Index%]!"
         ECHO for %%%%a in (!Ext[%Ext_Index%]!^) do (
         SETLOCAL DISABLEDELAYEDEXPANSION
-        SET sch_=!sch:%%%%a=  ã€%%%%aã€‘  !
+        SET sch_=!sch:%%%%a=  ¡i%%%%a¡j  !
         SETLOCAL ENABLEDELAYEDEXPANSION
         ECHO title SyS Clean !SNUMB! !sch_!
         ECHO del /f /s /q C:\*%%%%a
@@ -225,14 +225,14 @@ ECHO.
 
 :: Wait for independent cleanup script to complete
 :: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-ver|find "ç‰ˆæœ¬" >nul&&SET FindStr=å€‹æª”æ¡ˆ||SET FindStr=File^(s^)
+ver|find "ª©¥»" >nul&&SET FindStr=­ÓÀÉ®×||SET FindStr=File^(s^)
 :_WAIT01
 ECHO User list: 
 DIR /B /ON C:\users
 ECHO.
-ECHO C slot is clearedï¼š%DiskFreeS%
-SET /P= â– <nul
-for /L %%i in (1 1 30) do set /p a=â– <nul&ping /n 1 127.0.0.1>nul
+ECHO C slot is cleared¡G%DiskFreeS%
+SET /P= ¡½<nul
+for /L %%i in (1 1 30) do set /p a=¡½<nul&ping /n 1 127.0.0.1>nul
 for /f %%i in ('dir "%appdata%\IT_Clean_Tool\Count" /a-h-s /s^| find "%FindStr%"') do (Set /A "TOTAL=%%i")
 TITLE SyS Clean Please wait, clearing system junk files Done: %TOTAL% / Total: %SNUMB%......%ver%
 cls
@@ -278,8 +278,8 @@ ECHO ELAPSE    :%C_HOUR%:%C_MINS%:%C_SECS%.%C_MSEC%
 
 FOR /F "delims= tokens=1" %%a in ('fsutil volume diskfree c:') do set DiskFreeE=%%a
 ECHO.
-ECHO C slot before cleanï¼š%DiskFreeS%
-ECHO C slot after cleanï¼š%DiskFreeE%
+ECHO C slot before clean¡G%DiskFreeS%
+ECHO C slot after clean¡G%DiskFreeE%
 
 TITLE SYS Clean done......%C_HOUR%:%C_MINS%:%C_SECS%.%C_MSEC% %ver%
 ENDLOCAL
