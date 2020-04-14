@@ -1,4 +1,6 @@
 @ECHO off && SETLOCAL ENABLEDELAYEDEXPANSION 
+
+:: ~~~~~~~~~~~~~~~~ setting\ ~~~~~~~~~~~~~~~~~~
 :: 設定備份目標資料夾
 SET BackOutputDir=D:\Backup
 
@@ -12,13 +14,17 @@ SET Dir[5]=SshKey,%HomePath%\.ssh\
 SET Dir[6]=RL2,%HomePath%\.rainlendar2\
 SET Dir[7]=Vscode1,%USERPROFILE%\.vscode\extensions\
 SET Dir[8]=Vscode2,%APPDATA%\Code\User\
-SET Dir[9]=Intel,C:\Intel\
+SET Dir[9]=Everything,%APPDATA%\Code\User\
+SET Dir[10]=Intel,C:\Intel\
  
 :: 7zip路徑
 SET UnzipPath=C:\Program Files\7-Zip
 
 :: 備份wsl名稱
 SET WslName=kali-linux
+
+:: ~~~~~~~~~~~~~~~~ /setting ~~~~~~~~~~~~~~~~~~
+
 
 GOTO GetAdmin
 :Start
@@ -27,8 +33,6 @@ TITLE 備份與還原自定路徑
 IF not defined BackOutputDir SET BackOutputDir=.
 IF not exist "%UnzipPath%\7z.exe" ECHO 請下載並安裝7z並修改腳本內的路徑 https://www.developershome.com/7-zip/ && PAUSE && EXIT
 
-
-ECHO 注：備份時產生的log檔為還原時必要檔案
 ECHO 1.備份路徑
 ECHO 2.備份路徑、WSL、預設開啟程式
 ECHO 3.還原
@@ -56,7 +60,7 @@ SET StartTime=%_today%_%A_HOUR: =%%A_MINS: =%%A_SECS: =%
 
 TITLE %StartTime% 備份
 IF not exist "%BackOutputDir%\Backup" MKDIR "%BackOutputDir%\Backup"
-ECHO ;%StartTime% 備份>"%BackOutputDir%\Backup\%StartTime%.log"
+ECHO ;%StartTime% 備份>"%BackOutputDir%\Backup\%StartTime%.ini"
 
 SET Index=0
 SET "unbackup="
@@ -65,14 +69,14 @@ SET /A Index=%Index%+1
 IF defined Dir[%Index%] (
     for /F "tokens=1,2,3 delims=," %%i IN ("!Dir[%Index%]!") do (
         IF not exist %%j (
-            ECHO ;路徑不存在：%%i,%%j>>"%BackOutputDir%\Backup\%StartTime%.log"
+            ECHO ;路徑不存在：%%i,%%j>>"%BackOutputDir%\Backup\%StartTime%.ini"
             GOTO BackupCalcStart
         )
         SETLOCAL DISABLEDELAYEDEXPANSION
         IF defined %%k SET unbackup=-xr!catch
         "%UnzipPath%\7z.exe" a -tzip "%BackOutputDir%\Backup\%%i_%StartTime%.zip" "%%j*" %unbackup%
         SETLOCAL ENABLEDELAYEDEXPANSION
-        ECHO %%i,%%j>>"%BackOutputDir%\Backup\%StartTime%.log"
+        ECHO %%i,%%j>>"%BackOutputDir%\Backup\%StartTime%.ini"
     )
     GOTO BackupCalcStart
 )
@@ -81,19 +85,18 @@ ECHO.
 IF defined DataB_All (
     ECHO 匯出WSL %WslName%
     wsl --export %WslName% %BackOutputDir%\Backup\kali-linux_%StartTime%.tar
-    ECHO ;WSL,%WslName%,%BackOutputDir%\Backup\kali-linux_%StartTime%.tar>>"%BackOutputDir%\Backup\%StartTime%.log"
+    ECHO ;WSL,%WslName%,%BackOutputDir%\Backup\kali-linux_%StartTime%.tar>>"%BackOutputDir%\Backup\%StartTime%.ini"
     ECHO.
     ECHO 匯出 DefaultAppAssociations
-    dism /online /Export-DefaultAppAssociations:%BackOutputDir%\Backup\DefaultApplicationAssociations_%StartTime%.xml
-    ECHO ;DAA,DefaultApplicationAssociations,%BackOutputDir%\Backup\DefaultApplicationAssociations_%StartTime%.tar>>"%BackOutputDir%\Backup\%StartTime%.log"
-
+    dism /online /Export-DefaultAppAssociations:"%BackOutputDir%\\Backup\\DefaultApplicationAssociations_%StartTime%.xml"
+    ECHO ;DAA,DefaultApplicationAssociations,"%BackOutputDir%\\Backup\\DefaultApplicationAssociations_%StartTime%.xml">>"%BackOutputDir%\Backup\%StartTime%.ini"
 )
 :BackupEnd
 ECHO.
 ECHO ~~~~~~~~~~~~~~~~~~~~~~~~~
 ECHO 備份結果：
 ECHO.
-TYPE "%BackOutputDir%\Backup\%StartTime%.log"
+TYPE "%BackOutputDir%\Backup\%StartTime%.ini"
 ECHO ~~~~~~~~~~~~~~~~~~~~~~~~~
 ECHO.
 PAUSE
@@ -107,7 +110,7 @@ CLS
 SET Index=0
 ECHO 備份資料夾中的檔案列表：
 FOR /F "tokens=1,2 delims=." %%i IN ('dir /b %BackOutputDir%\Backup\') do (
-    IF %%j == log (
+    IF %%j == ini (
         SET /A Index=!Index!+1
         SET Item[!Index!]=%%i
         ECHO !Index!：%%i
@@ -127,24 +130,37 @@ ECHO.
 ECHO ~~~~~~~~~~~~~~~~~~~~
 ECHO 即將還原 %UserDate% ，內容:
 ECHO.
-TYPE %BackOutputDir%\Backup\%UserDate%.log
+TYPE "%BackOutputDir%\Backup\%UserDate%.ini"
 ECHO ~~~~~~~~~~~~~~~~~~~~
 ECHO.
 PAUSE
 ECHO.
+ECHO %UserDate% 還原>"%TEMP%\Restore_%UserDate%.log"
 
-FOR /F "eol=; tokens=1,2 delims=," %%i IN (%BackOutputDir%\Backup\%UserDate%.log) do (
+FOR /F "eol=; tokens=1,2 delims=," %%i IN (%BackOutputDir%\Backup\%UserDate%.ini) do (
     "%UnzipPath%\7z.exe" x "%BackOutputDir%\Backup\%%i_%UserDate%.zip" -o"%%j" -y
-    )
+    ECHO %%i,%%j>>"%TEMP%\Restore_%UserDate%.log"
+    IF not exist "%BackOutputDir%\Backup\%%i_%UserDate%.zip" ECHO 備份檔不存在:%%i,%%j>>"%TEMP%\Restore_%UserDate%.log"
+)
 
-FOR /F "eol=- tokens=1,2,3 delims=," %%i IN (%BackOutputDir%\Backup\%UserDate%.log) do (
+FOR /F "eol=- tokens=1,2,3 delims=," %%i IN (%BackOutputDir%\Backup\%UserDate%.ini) do (
     IF "%%i" == ";WSL" (
         wsl --import %%j c:\WSL %%k
+        ECHO ;WSL,%%j,%%k>>"%TEMP%\Restore_%UserDate%.log"
+        IF not exist %%k" ECHO 備份檔不存在;WSL,%%j,%%k>>"%TEMP%\Restore_%UserDate%.log"
+
     )
     IF "%%i" == ";DAA" (
         dism /online /Import-DefaultAppAssociations:%%k
+        ECHO ;DAA,%%j,%%k>>"%TEMP%\Restore_%UserDate%.log"
+        IF not exist %%k" ECHO 備份檔不存在;WSL,%%j,%%k>>"%TEMP%\Restore_%UserDate%.log"
     )
-    ) 
+)
+ECHO.
+ECHO 還原結果
+TYPE "%TEMP%\Restore_%UserDate%.log"
+DEL /s /f %TEMP%\Restore_%UserDate%.log
+
 PAUSE
 EXIT
 
