@@ -72,3 +72,9 @@ clean2 - Multi-Process 系統清理腳本，內建三種類型。
 
 參數形式 App[1]=7z.exe,C:\Program Files\7-Zip,0
 執行檔或檔案名稱,路徑,是否開啟後要先暫停腳本(1為啟用暫停)
+
+----
+
+## GithubRelease_Downloader
+
+快速下載 Github 項目的 Release 用腳本，仰賴 curl。
