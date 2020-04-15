@@ -16,12 +16,19 @@ SET Dir[7]=Vscode1,%USERPROFILE%\.vscode\extensions\
 SET Dir[8]=Vscode2,%APPDATA%\Code\User\
 SET Dir[9]=Everything,%APPDATA%\Code\User\
 SET Dir[10]=Intel,C:\Intel\
+SET Dir[11]=Token2Shell,%USERPROFILE%\Documents\Token2Shell\
+SET Dir[12]=PowerShell,%USERPROFILE%\Documents\WindowsPowerShell
  
 :: 7zip路徑
 SET UnzipPath=C:\Program Files\7-Zip
 
 :: 備份wsl名稱
 SET WslName=kali-linux
+
+:: 使用 backup-start-menu-layout 備份開始功能表，設置 BackupSML.exe 所在資料夾路徑
+:: 如不使用請不用設置
+:: https://www.sordum.org/10997/backup-start-menu-layout-v1-3/
+SET BackupSmlDir=D:\Programs\BackupSML
 
 :: ~~~~~~~~~~~~~~~~ /setting ~~~~~~~~~~~~~~~~~~
 
@@ -30,12 +37,19 @@ GOTO GetAdmin
 :Start
 :: ~~~~~~~~~~~~~~~~~~~~~~~~ 選擇開始 ~~~~~~~~~~~~~~~~~~~~~~~
 TITLE 備份與還原自定路徑
-IF not defined BackOutputDir SET BackOutputDir=.
+IF not defined BackOutputDir SET BackOutputDir=.\
+ECHO 備份檔案存放路徑：%BackOutputDir%
 IF not exist "%UnzipPath%\7z.exe" ECHO 請下載並安裝7z並修改腳本內的路徑 https://www.developershome.com/7-zip/ && PAUSE && EXIT
-
+IF defined BackupSmlDir (
+    IF not exist "%BackupSmlDir%\BackupSML.exe" ECHO 請確認開始功能表備份軟體 "%BackupSmlDir%\BackupSML.exe" 是否能正常開啟。 && PAUSE && EXIT
+    ECHO 開始功能表備份已開啟 "%BackupSmlDir%\BackupSML.exe" 
+)
+ECHO ~~~~~~
+ECHO.
 ECHO 1.備份路徑
 ECHO 2.備份路徑、WSL、預設開啟程式
 ECHO 3.還原
+ECHO.
 CHOICE /c:123 /m:"選擇功能"
 IF errorlevel 3 GOTO ChoiceDataR
 IF errorlevel 2 GOTO ChoiceBackup_All
@@ -92,6 +106,11 @@ IF defined DataB_All (
     ECHO ;DAA,DefaultApplicationAssociations,"%BackOutputDir%\\Backup\\DefaultApplicationAssociations_%StartTime%.xml">>"%BackOutputDir%\Backup\%StartTime%.ini"
 )
 :BackupEnd
+
+IF defined BackupSmlDir (
+    "%BackupSmlDir%\BackupSML.exe" /C "%BackOutputDir%\Backup\BackupSML_%StartTime%"
+)
+
 ECHO.
 ECHO ~~~~~~~~~~~~~~~~~~~~~~~~~
 ECHO 備份結果：
@@ -156,6 +175,11 @@ FOR /F "eol=- tokens=1,2,3 delims=," %%i IN (%BackOutputDir%\Backup\%UserDate%.i
         IF not exist %%k" ECHO 備份檔不存在;WSL,%%j,%%k>>"%TEMP%\Restore_%UserDate%.log"
     )
 )
+
+IF defined BackupSmlDir (
+    "%BackupSmlDir%\BackupSML.exe" /R "%BackOutputDir%\Backup\BackupSML_%UserDate%"
+)
+
 ECHO.
 ECHO 還原結果
 TYPE "%TEMP%\Restore_%UserDate%.log"
