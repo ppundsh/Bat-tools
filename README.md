@@ -6,6 +6,12 @@
 
 ----
 
+## Automatically Creates Restore Point
+
+設定 Windows 開機自動創建還原點。
+
+----
+
 ## Clean2
 
 clean2 - Multi-Process 系統清理腳本，內建三種類型。
@@ -77,4 +83,4 @@ clean2 - Multi-Process 系統清理腳本，內建三種類型。
 
 ## GithubRelease_Downloader
 
-快速下載 Github 項目的 Release 用腳本，仰賴 curl。
+快速下載 Github 項目的 Release 用腳本，需搭配 curl。
