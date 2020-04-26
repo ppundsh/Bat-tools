@@ -66,7 +66,7 @@ ECHO 間隔時間設定過短可能造成過早覆蓋掉舊的還原點，系統預設間隔 24 小時， 0 為無
 ECHO.
 SET /P timeInterval=單位-分鐘：
 reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" /v SystemRestorePointCreationFrequency /t reg_dword /d %timeInterval% /f
-IF %CreationFrequency%==None (echo 已設定建立系統還原點間隔時間限制為 %timeInterval% 分鐘) else (echo 原先建立系統還原點間隔時間限制為 %CreationFrequency% 分鐘，已修改為 %timeInterval% 分鐘)
+IF %CreationFrequency%==1440 (echo 已設定建立系統還原點間隔時間限制為 %timeInterval% 分鐘) else (echo 原先建立系統還原點間隔時間限制為 %CreationFrequency% 分鐘，已修改為 %timeInterval% 分鐘)
 SET sTr=手動定義 %timeInterval% 分鐘
 echo 已設定完成，請按任意鍵返回目錄 && pause >nul && GOTO ChoiceMenu
 
