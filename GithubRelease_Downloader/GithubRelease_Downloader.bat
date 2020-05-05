@@ -7,10 +7,13 @@ Rem 設定路徑
 
 SET ReleaseUrl[1]=https://api.github.com/repos/namazso/OpenHashTab/releases/latest
 SET ReleaseUrl[2]=https://api.github.com/repos/felixse/FluentTerminal/releases/latest
+SET ReleaseUrl[3]=https://api.github.com/repos/keepassxreboot/keepassxc/releases/latest
+SET ReleaseUrl[4]=https://api.github.com/repos/microsoft/PowerToys/releases/latest
 SET DownloadDir=D:\
 SET CurlPath=D:\Programs\curl\bin
 
 :: ~~~~~~~~~~~~~~~~ /setting ~~~~~~~~~~~~~~~~~~
+ECHO 下載路徑：%DownloadDir%
 
 Rem 檢測
 IF NOT EXIST "%CurlPath%\curl.exe" ECHO 請下載Crul並修改腳本內的路徑 https://curl.haxx.se/windows/ && pause && exit
@@ -38,4 +41,5 @@ if defined ReleaseUrl[%Index%] (
     ECHO.
     GOTO DownloadCalcStart
 )
-pause
+ECHO 已完成
+pause > nul

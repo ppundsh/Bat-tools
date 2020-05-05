@@ -44,6 +44,9 @@ IF errorlevel 1 (
     call :Task01
 )
 
+:Info
+
+
 :Task01
 echo 開啟系統保護 C:\。
 echo.
